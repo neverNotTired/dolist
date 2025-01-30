@@ -3,14 +3,14 @@ import Svg, { Polyline } from 'react-native-svg';
 import { s } from './Card.style';
 
 interface Todo {
-    id: number;
+    id: string;
     title: string;
     completed: boolean;
 }
 
-type Index = number;
+type Index = string | number;
 
-type HandlePress = (id: number) => void;
+type HandlePress = (id: string) => void;
 
 type HandleLongPress = (todo: Todo) => void;
 
@@ -20,7 +20,7 @@ export const Card = ({ todo, index, handlePress, handleLongPress }: { todo: Todo
         <TouchableOpacity onLongPress={() => handleLongPress(todo)} style={[s.card, index === 0 && s.cardOne]} onPress={() => handlePress(todo.id)}>
             <View style={s.cardInner}>
                 <Text style={[s.cardText, { textDecorationLine: todo.completed ? 'line-through' : 'none' }]}>
-                    {todo.title}{index}
+                    {todo.title}
                 </Text>
                 {todo.completed && (
                     <Svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4278da" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" style={s.check}>

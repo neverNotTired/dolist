@@ -4,6 +4,7 @@ import { ScrollView, Text, View, Alert } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { useState, useEffect } from 'react';
 import Dialog from 'react-native-dialog';
+import uuid from 'react-native-uuid';
 
 import { Header } from './components/Header/Header';
 import { Card } from './components/Card/Card';
@@ -12,27 +13,27 @@ import { Footer } from './components/Footer/Footer';
 import { Add } from './components/Add/Add';
 
 type Todo = {
-  id: number;
+  id: string;
   title: string;
   completed: boolean;
 };
 
 const App = () => {
   const [todoList, setTodoList] = useState<Todo[]>([
-    { id: 1, title: 'Learn React Native', completed: true },
-    { id: 2, title: 'Learn TypeScript', completed: false },
-    { id: 3, title: 'Learn Expo', completed: false },
-    { id: 4, title: 'Learn React Native', completed: true },
-    { id: 5, title: 'Learn TypeScript', completed: false },
-    { id: 6, title: 'Learn GraphQL', completed: false },
-    { id: 7, title: 'Learn Redux', completed: false },
-    { id: 8, title: 'Learn Jest', completed: true },
-    { id: 9, title: 'Learn Next.js', completed: false },
-    { id: 10, title: 'Learn Docker', completed: true },
+    { id: '1', title: 'Learn React Native', completed: true },
+    { id: '2', title: 'Learn TypeScript', completed: false },
+    { id: '3', title: 'Learn Expo', completed: false },
+    { id: '4', title: 'Learn React Native', completed: true },
+    { id: '5', title: 'Learn TypeScript', completed: false },
+    { id: '6', title: 'Learn GraphQL', completed: false },
+    { id: '7', title: 'Learn Redux', completed: false },
+    { id: '8', title: 'Learn Jest', completed: true },
+    { id: '9', title: 'Learn Next.js', completed: false },
   ]);
 
   const [selectedTab, setSelectedTab] = useState<string>('all');
   const [showAddDialog, setShowAddDialog] = useState<boolean>(false);
+  const [inputValue, setInputValue] = useState<string>('');
 
   const getFilteredTodoList = (tab: string) => {
     switch (tab) {
@@ -74,7 +75,7 @@ const App = () => {
     ));
   };
 
-  const updateTodo = (id: number) => {
+  const updateTodo = (id: string) => {
     const updatedTodoList = todoList.map(todo => {
       if (todo.id === id) {
         todo.completed = !todo.completed;
@@ -84,6 +85,20 @@ const App = () => {
     setTodoList(updatedTodoList);
   };
 
+  const addTodo = () => {
+    if (!inputValue) {
+      return;
+    }
+    const newTodo: Todo = {
+      id: uuid.v4(),
+      title: inputValue,
+      completed: false,
+    };
+    setTodoList([...todoList, newTodo]);
+    setShowAddDialog(false);
+    setInputValue('');
+  };
+
   const renderAddDialog = () => {
     return (
       <Dialog.Container visible={showAddDialog} onBackdropPress={() => setShowAddDialog(false)}>
@@ -91,9 +106,9 @@ const App = () => {
           <Dialog.Description>
             Choose a title for your new todo.
           </Dialog.Description>
-          <Dialog.Input placeholder="Title" />
+          <Dialog.Input onChangeText={(text) => setInputValue(text)}  placeholder="Title" />
           <Dialog.Button label="Cancel" onPress={() => setShowAddDialog(false)}/>
-          <Dialog.Button label="Save" />
+          <Dialog.Button label="Save" onPress={addTodo}/>
       </Dialog.Container>
     );
   };

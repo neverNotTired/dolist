@@ -3,7 +3,7 @@ import { s } from './Footer.style';
 
 // Define the Todo type
 interface Todo {
-    id: number;
+    id: string;
     title: string;
     completed: boolean;
 }
