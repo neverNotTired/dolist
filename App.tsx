@@ -28,7 +28,7 @@ const App = () => {
   const [selectedTab, setSelectedTab] = useState<string>('all');
   const [showAddDialog, setShowAddDialog] = useState<boolean>(false);
   const [inputValue, setInputValue] = useState<string>('');
-
+  const ScrollViewRef = React.useRef<ScrollView>(null);
 
   useEffect(() => {
     loadTodoList();
@@ -134,6 +134,9 @@ const App = () => {
     setTodoList([...todoList, newTodo]);
     setShowAddDialog(false);
     setInputValue('');
+    setTimeout(() => {
+      ScrollViewRef.current?.scrollToEnd({ animated: true });
+    }, 300);
   };
 
   const renderAddDialog = () => {
@@ -143,9 +146,9 @@ const App = () => {
           <Dialog.Description>
             Choose a title for your new todo.
           </Dialog.Description>
-          <Dialog.Input onChangeText={(text) => setInputValue(text)}  placeholder="Title" />
-          <Dialog.Button label="Cancel" onPress={() => setShowAddDialog(false)}/>
-          <Dialog.Button label="Save" onPress={addTodo}/>
+          <Dialog.Input onChangeText={(text) => setInputValue(text)}  placeholder="Title" style={s.input} multiline={true} />
+          <Dialog.Button label="Cancel" onPress={() => setShowAddDialog(false)} style={s.btn} />
+          <Dialog.Button label="Save" onPress={addTodo} style={s.btn} />
       </Dialog.Container>
     );
   };
@@ -160,7 +163,7 @@ const App = () => {
         <SafeAreaView style={s.app}>
             <Header />
             <View style={s.body}>
-              <ScrollView>
+              <ScrollView ref={ScrollViewRef}>
                 { renderTodoList() }
               </ScrollView>
             </View>

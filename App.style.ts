@@ -12,6 +12,15 @@ export const s = StyleSheet.create({
     body: {
         flex: 5,
     },
+    input: {
+        color: '#4278da',
+        fontSize: 14,
+    },
+    btn: {
+        color: '#4278da',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
     footer: {
         height: 70,
         backgroundColor: '#F9F9F9',
