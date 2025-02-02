@@ -5,6 +5,7 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { useState, useEffect } from 'react';
 import Dialog from 'react-native-dialog';
 import uuid from 'react-native-uuid';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { Header } from './components/Header/Header';
 import { Card } from './components/Card/Card';
@@ -18,22 +19,58 @@ type Todo = {
   completed: boolean;
 };
 
+let isFirstLoad = true;
+let isLoadUpdate = false;
+
 const App = () => {
-  const [todoList, setTodoList] = useState<Todo[]>([
-    { id: '1', title: 'Learn React Native', completed: true },
-    { id: '2', title: 'Learn TypeScript', completed: false },
-    { id: '3', title: 'Learn Expo', completed: false },
-    { id: '4', title: 'Learn React Native', completed: true },
-    { id: '5', title: 'Learn TypeScript', completed: false },
-    { id: '6', title: 'Learn GraphQL', completed: false },
-    { id: '7', title: 'Learn Redux', completed: false },
-    { id: '8', title: 'Learn Jest', completed: true },
-    { id: '9', title: 'Learn Next.js', completed: false },
-  ]);
+  const [todoList, setTodoList] = useState<Todo[]>([]);
 
   const [selectedTab, setSelectedTab] = useState<string>('all');
   const [showAddDialog, setShowAddDialog] = useState<boolean>(false);
   const [inputValue, setInputValue] = useState<string>('');
+
+
+  useEffect(() => {
+    loadTodoList();
+  }, []);
+
+  useEffect(() => {
+    if (!isLoadUpdate) { // Prevents saving the list on load
+      if (isFirstLoad) { // Prevents saving the list on first load
+        isFirstLoad = false;
+      } else {
+        saveTodoList();
+      }
+    } else {
+      isLoadUpdate = false;
+    }
+  }, [todoList]);
+
+  const loadTodoList = async () => {
+    console.log('Loading todo list');
+    try {
+      const todoListString = await AsyncStorage.getItem('@todoList');
+      isLoadUpdate = true;
+
+      if (todoListString) {
+        setTodoList(JSON.parse(todoListString));
+      } else {
+        console.log('No todo list found');
+        setTodoList([]);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const saveTodoList = async () => {
+    console.log('Saving todo list');
+    try {
+      await AsyncStorage.setItem('@todoList', JSON.stringify(todoList));
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const getFilteredTodoList = (tab: string) => {
     switch (tab) {
