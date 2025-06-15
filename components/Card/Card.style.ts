@@ -2,7 +2,7 @@ import { StyleSheet } from "react-native";
 
 export const s = StyleSheet.create({
     card: {
-        backgroundColor: "#fff",
+        backgroundColor: "#243647",
         borderRadius: 10,
         padding: 20,
         marginTop: 10,
@@ -38,11 +38,13 @@ export const s = StyleSheet.create({
     },
     cardTitle: {
         fontSize: 24,
-        fontWeight: "bold",
+        fontWeight: "semibold",
         marginBottom: 10,
     },
     cardText: {
+        fontWeight: "semibold",
         fontSize: 16,
+        color: "#FFF"
     },
     cardButton: {
         backgroundColor: "#FF6347",

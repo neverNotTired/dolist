@@ -25,7 +25,7 @@ export function Footer({ tab, onPress, todoList } : FooterProps) {
     function getTextStyle(tabName: string) {
         return {
             fontWeight: 'bold' as const,
-            color: tabName === tab ? '#2F76E5' : 'black'
+            color: tabName === tab ? '#2F76E5' : 'white'
         };
     }
 

@@ -16,6 +16,19 @@ import { Add } from './components/Add/Add';
 type Todo = {
   id: string;
   title: string;
+  description?: string;
+  score?: number;
+  dueDate?: string;
+  priority?: string;
+  tags?: string[];
+  notes?: string;
+  location?: string;
+  reminder?: string;
+  recurrence?: string;
+  subtasks?: string[];
+  attachments?: string[];
+  createdAt?: string;
+  updatedAt?: string;
   completed: boolean;
 };
 
@@ -27,6 +40,10 @@ const App = () => {
 
   const [selectedTab, setSelectedTab] = useState<string>('all');
   const [showAddDialog, setShowAddDialog] = useState<boolean>(false);
+  const [showSingleDeleteDialog, setShowSingleDeleteDialog] = useState<boolean>(false);
+  const [showDeleteAllDialog, setShowDeleteAllDialog] = useState<boolean>(false);
+  const [todoToDelete, setTodoToDelete] = useState<Todo | null>(null);
+
   const [inputValue, setInputValue] = useState<string>('');
   const ScrollViewRef = React.useRef<ScrollView>(null);
 
@@ -86,19 +103,8 @@ const App = () => {
   };
 
   const deleteTodo = (todo: Todo) => {
-    Alert.alert(
-      'Delete Todo',
-      `Are you sure you want to delete "${todo.title}"?`,
-      [
-        {
-          text: 'Cancel',
-          onPress: () => console.log('Cancel Pressed'),
-          style: 'cancel',
-        },
-        { text: 'Delete', onPress: () => deleteTodoItem(todo), style: 'destructive' },
-      ],
-      { cancelable: false }
-    );
+    setTodoToDelete(todo);
+    setShowSingleDeleteDialog(true);
   };
 
   const deleteTodoItem = (todo: Todo) => {
@@ -106,9 +112,36 @@ const App = () => {
     setTodoList(updatedTodoList);
   };
 
+  const handleDeleteAll = () => {
+    setShowDeleteAllDialog(true);
+  };
+
+  const confirmDeleteAll = () => {
+    setTodoList([]);
+    setShowDeleteAllDialog(false);
+  };
+
   const renderTodoList = () => {
-    return getFilteredTodoList(selectedTab).map((todo, index) => (
-      <Card todo={todo} handleLongPress={deleteTodo} index={index} key={index} handlePress={updateTodo} />
+    const filteredTodos = getFilteredTodoList(selectedTab);
+
+    if (filteredTodos.length === 0) {
+      return (
+        <View style={{ padding: 20 }}>
+          <Text style={{ color: '#888', fontSize: 16, textAlign: 'center' }}>
+            You have nothing todo 🏖️.
+          </Text>
+        </View>
+      );
+    }
+
+    return filteredTodos.map((todo, index) => (
+      <Card
+        todo={todo}
+        handleLongPress={deleteTodo}
+        handlePress={updateTodo}
+        index={index}
+        key={index}
+      />
     ));
   };
 
@@ -141,9 +174,18 @@ const App = () => {
 
   const renderAddDialog = () => {
     return (
-      <Dialog.Container visible={showAddDialog} onBackdropPress={() => setShowAddDialog(false)}>
-          <Dialog.Title>Add ToDo</Dialog.Title>
-          <Dialog.Description>
+        <Dialog.Container
+          visible={showAddDialog}
+          onBackdropPress={() => setShowAddDialog(false)}
+          contentStyle={s.modalContent}
+        >
+
+          <Dialog.Title
+            style={s.modalTitle}
+          >
+            Add ToDo
+          </Dialog.Title>
+          <Dialog.Description style={s.modalText}>
             Choose a title for your new todo.
           </Dialog.Description>
           <Dialog.Input onChangeText={(text) => setInputValue(text)}  placeholder="Title" style={s.input} multiline={true} />
@@ -157,6 +199,65 @@ const App = () => {
     setShowAddDialog(true);
   };
 
+  const renderDeleteAllDialog = () => {
+  return (
+    <Dialog.Container
+      visible={showDeleteAllDialog} // ✅ FIXED
+      onBackdropPress={() => setShowDeleteAllDialog(false)}
+      contentStyle={s.modalContent}
+    >
+      <Dialog.Title style={s.modalTitle}>Delete All?</Dialog.Title>
+      <Dialog.Description style={s.modalText}>
+        Are you sure you want to delete all your todos? This action can't be undone.
+      </Dialog.Description>
+      <Dialog.Button
+        label="Cancel"
+        onPress={() => setShowDeleteAllDialog(false)}
+        style={s.btn}
+      />
+      <Dialog.Button
+        label="Delete All"
+        onPress={confirmDeleteAll}
+        style={s.btn}
+      />
+    </Dialog.Container>
+  );
+};
+
+  const renderDeleteDialog = () => {
+  if (!todoToDelete) return null;
+
+  return (
+    <Dialog.Container
+      visible={showSingleDeleteDialog}
+      onBackdropPress={() => setShowSingleDeleteDialog(false)}
+      contentStyle={s.modalContent}
+    >
+      <Dialog.Title style={s.modalTitle}>Delete Todo</Dialog.Title>
+      <Dialog.Description style={s.modalText}>
+        Are you sure you want to delete "{todoToDelete.title}"?
+      </Dialog.Description>
+      <Text style={s.modalHint}>
+        Hold the '+' button to delete all tasks.
+      </Text>
+      <Dialog.Button
+        label="Cancel"
+        onPress={() => setShowSingleDeleteDialog(false)}
+        style={s.btn}
+      />
+      <Dialog.Button
+        label="Delete"
+        onPress={() => {
+          deleteTodoItem(todoToDelete);
+          setShowSingleDeleteDialog(false);
+          setTodoToDelete(null);
+        }}
+        style={s.btn}
+      />
+    </Dialog.Container>
+  );
+};
+
   return (
     <>
       <SafeAreaProvider>
@@ -167,7 +268,10 @@ const App = () => {
                 { renderTodoList() }
               </ScrollView>
             </View>
-            <Add onPress={() => showAddDialogPopup()}/>
+            <Add 
+              onPress={showAddDialogPopup} 
+              onLongPress={handleDeleteAll}
+              />
         </SafeAreaView>
       </SafeAreaProvider>
       <Footer 
@@ -176,6 +280,8 @@ const App = () => {
         todoList={todoList}
         />
         {renderAddDialog()}
+        {renderDeleteDialog()}
+        {renderDeleteAllDialog()}
     </>
   );
 };

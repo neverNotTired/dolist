@@ -3,7 +3,7 @@ import { StyleSheet } from "react-native";
 export const s = StyleSheet.create({
     footer: {
         height: 40,
-        backgroundColor: '#F9F9F9',
+        backgroundColor: '#111a22',
         flexDirection: "row",
         justifyContent: "space-around",
         alignItems: "center",
@@ -15,7 +15,7 @@ export const s = StyleSheet.create({
         shadowOpacity: 0.22,
         shadowRadius: 2.22,
         elevation: 3,
-        borderTopColor: "#E0E0E0",
+        borderTopColor: "#374151",
         borderTopWidth: 1,
 
     },
