@@ -260,7 +260,7 @@ const App = () => {
 
   return (
     <>
-      <SafeAreaProvider>
+      <SafeAreaProvider style={s.safeArea}>
         <SafeAreaView style={s.app}>
             <Header />
             <View style={s.body}>

@@ -1,6 +1,9 @@
 import { StyleSheet } from 'react-native';
 
 export const s = StyleSheet.create({
+    safeArea: {
+        backgroundColor: '#111a22',
+    },
     app: {
         flex: 1,
         backgroundColor: '#111a22',
